@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '../../lib/utils'
-import GlobalSearch from '../admin/GlobalSearch'
 
 // Admin navigation items - Comprehensive admin functionality
 const adminNavigation = [
@@ -339,11 +338,6 @@ export default function AdminLayout({ user, children }) {
         </footer>
       </div>
 
-      {/* Global Search Modal */}
-      <GlobalSearch 
-        isOpen={searchOpen} 
-        onClose={() => setSearchOpen(false)} 
-      />
     </div>
   )
 }
