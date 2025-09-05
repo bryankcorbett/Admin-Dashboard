@@ -1,0 +1,13 @@
+:3000 {
+  root * dist
+  encode zstd gzip
+
+  # Health endpoint takes priority over SPA
+  handle_path /healthz {
+    respond "ok"
+  }
+
+  # Serve static files; fall back to index.html for SPA routes
+  try_files {path} /index.html
+  file_server
+}
