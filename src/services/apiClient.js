@@ -3,11 +3,11 @@
  * Handles all API communication for the admin panel
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
 class ApiClient {
   constructor() {
-    this.baseURL = `${API_BASE_URL}/api/admin`
+    this.baseURL = `${API_BASE_URL}/api`
     this.token = localStorage.getItem('admin_token')
   }
 
@@ -164,35 +164,35 @@ class ApiClient {
    * Get NFC tags list
    */
   async getNfcTags(params = {}) {
-    return this.get('/nfc-tags', params)
+    return this.get('/nfc/tags', params)
   }
 
   /**
    * Get single NFC tag
    */
   async getNfcTag(id) {
-    return this.get(`/nfc-tags/${id}`)
+    return this.get(`/nfc/tags/${id}`)
   }
 
   /**
    * Create new NFC tag
    */
   async createNfcTag(tagData) {
-    return this.post('/nfc-tags', tagData)
+    return this.post('/nfc/tags', tagData)
   }
 
   /**
    * Update NFC tag
    */
   async updateNfcTag(id, tagData) {
-    return this.put(`/nfc-tags/${id}`, tagData)
+    return this.put(`/nfc/tags/${id}`, tagData)
   }
 
   /**
    * Delete NFC tag
    */
   async deleteNfcTag(id) {
-    return this.delete(`/nfc-tags/${id}`)
+    return this.delete(`/nfc/tags/${id}`)
   }
 
   // ===== STORES API =====
@@ -382,11 +382,12 @@ class ApiClient {
    * Admin login
    */
   async login(email, password) {
-    const response = await fetch(`${API_BASE_URL}/api/auth/admin`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     })
 
