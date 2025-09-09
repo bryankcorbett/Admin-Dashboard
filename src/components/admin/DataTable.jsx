@@ -29,12 +29,12 @@ export default function DataTable({
     limit: pageSize,
     total: 0,
     pages: 0
-  })
+  });
   const [filters, setFilters] = useState({
     search: '',
     sort: 'created_at',
     order: 'desc'
-  })
+  });
 
   // CRUD state
   const [showCreateModal, setShowCreateModal] = useState(false)
