@@ -34,8 +34,6 @@ The Admin Dashboard provides complete system management capabilities including:
 ### Prerequisites
 - Node.js 18+ 
 - npm 10.9.2+
-- **PHP 8.2+ (for API backend) - REQUIRED**
-- **MySQL 8.0+ (for database) - REQUIRED**
 
 ### Installation
 
@@ -47,34 +45,30 @@ The Admin Dashboard provides complete system management capabilities including:
 
 2. **Environment Setup**
    ```bash
-   cp env.example .env
-   # Edit .env with your configuration
+   # The application comes with a working .env file with mock data enabled
+   # No additional configuration needed for demo purposes
    ```
 
-3. **Start Backend API Server (REQUIRED)**
-   ```bash
-   # Navigate to your PHP API directory and start the server
-   php -S localhost:8000
-   ```
-   
-   **Important**: The admin dashboard requires a PHP backend API server running on port 8000. Without this server, you will see "Failed to fetch" errors.
-
-4. **Start Development Server**
+3. **Start Development Server**
    ```bash
    npm run dev
    ```
 
-5. **Access Admin Dashboard**
+4. **Access Admin Dashboard**
    - Open http://localhost:5175
-   - Default admin user: admin@biz365.ai
+   - The application uses mock data by default
+   - All CRUD operations work with local storage
 
 ### Environment Variables
 
-Create a `.env` file with the following variables:
+The application includes a working `.env` file with these key variables:
 
 ```env
 # API Configuration
 VITE_API_BASE_URL=http://localhost:8000
+
+# Mock Data Configuration (enabled by default)
+VITE_USE_MOCK_DATA=true
 
 # Application Configuration
 VITE_APP_NAME=Biz365 Admin Dashboard
@@ -94,6 +88,20 @@ VITE_ENABLE_DEBUG=true
 VITE_GOOGLE_OAUTH_CLIENT_ID=your-google-client-id
 VITE_APPLE_OAUTH_CLIENT_ID=your-apple-client-id
 ```
+
+### Mock Data vs Real API
+
+The application supports two modes:
+
+1. **Mock Data Mode** (Default): Uses local mock data stored in localStorage
+   - Set `VITE_USE_MOCK_DATA=true` in `.env`
+   - No backend server required
+   - Perfect for demos and development
+
+2. **Real API Mode**: Connects to actual PHP backend
+   - Set `VITE_USE_MOCK_DATA=false` in `.env`
+   - Requires PHP 8.2+ backend server running on port 8000
+   - Requires MySQL 8.0+ database
 
 ## Development
 
@@ -133,12 +141,21 @@ admin-dashboard/
 
 ## API Integration
 
-The admin dashboard connects to the PHP API backend:
+The admin dashboard can connect to a PHP API backend or use mock data:
 
+### Mock Data Mode (Default)
+- **Data Storage**: localStorage with automatic persistence
+- **CRUD Operations**: Full create, read, update, delete functionality
+- **Search & Filter**: Real-time search and filtering
+- **Pagination**: Working pagination with configurable page sizes
+- **No Backend Required**: Works completely standalone
+
+### Real API Mode
 - **Base URL**: Configured via `VITE_API_BASE_URL`
 - **Authentication**: JWT token-based
 - **Endpoints**: RESTful API with CRUD operations
 - **CORS**: Configured for cross-origin requests
+- **Backend Required**: PHP 8.2+ with MySQL 8.0+
 
 ### API Endpoints
 
