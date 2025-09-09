@@ -502,17 +502,7 @@ export default function DataTable({
       />
 
       {/* Toast Container */}
-      <ToastContainer>
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            message={toast.message}
-            type={toast.type}
-            duration={toast.duration}
-            onClose={() => removeToast(toast.id)}
-          />
-        ))}
-      </ToastContainer>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   )
 }
