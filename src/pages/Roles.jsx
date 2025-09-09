@@ -37,12 +37,12 @@ export default function Roles() {
     try {
       setLoading(true)
       const { default: apiClient } = await import('../services/apiClient')
-      const response = await apiClient.listEntities('/admin/roles')
+      const response = await apiClient.getRoles()
       setRoles(response.data || [])
     } catch (error) {
       console.error('Error fetching roles:', error)
-      setError(error.message || 'Failed to connect to API server')
-      addToast(error.message || 'Failed to load roles. Please ensure the backend server is running.', 'error')
+      setError(error.message)
+      addToast(error.message || 'Failed to load roles', 'error')
     } finally {
       setLoading(false)
     }
@@ -51,18 +51,18 @@ export default function Roles() {
   const fetchPermissions = async () => {
     try {
       const { default: apiClient } = await import('../services/apiClient')
-      const response = await apiClient.listEntities('/admin/permissions')
+      const response = await apiClient.getPermissions()
       setPermissions(response.data || [])
     } catch (error) {
       console.error('Error fetching permissions:', error)
-      addToast(error.message || 'Failed to load permissions. Please ensure the backend server is running.', 'error')
+      addToast(error.message || 'Failed to load permissions', 'error')
     }
   }
 
   const fetchRolePermissions = async (roleId) => {
     try {
       const { default: apiClient } = await import('../services/apiClient')
-      const response = await apiClient.getEntity('/admin/roles', roleId)
+      const response = await apiClient.getRole(roleId)
       return response.data?.permissions || []
     } catch (error) {
       console.error('Error fetching role permissions:', error)
@@ -85,7 +85,7 @@ export default function Roles() {
     try {
       setFormLoading(true)
       const { default: apiClient } = await import('../services/apiClient')
-      await apiClient.createEntity('/admin/roles', formData)
+      await apiClient.createRole(formData)
       
       setShowCreateModal(false)
       addToast('Role created successfully!', 'success')
@@ -103,7 +103,7 @@ export default function Roles() {
     try {
       setFormLoading(true)
       const { default: apiClient } = await import('../services/apiClient')
-      await apiClient.updateEntity('/admin/roles', selectedRole.id, formData)
+      await apiClient.updateRole(selectedRole.id, formData)
       
       setShowEditModal(false)
       setSelectedRole(null)
@@ -122,7 +122,7 @@ export default function Roles() {
     try {
       setFormLoading(true)
       const { default: apiClient } = await import('../services/apiClient')
-      await apiClient.deleteEntity('/admin/roles', selectedRole.id)
+      await apiClient.deleteRole(selectedRole.id)
       
       setShowDeleteDialog(false)
       setSelectedRole(null)
@@ -139,13 +139,20 @@ export default function Roles() {
   const handlePermissionsUpdate = async (roleId, permissionId, granted) => {
     try {
       const { default: apiClient } = await import('../services/apiClient')
-      const action = granted ? 'grant' : 'revoke'
-      await apiClient.post(`/admin/roles/${roleId}/permissions`, {
-        permission_id: permissionId,
-        action: action
-      })
+      if (granted) {
+        await apiClient.grantPermission(roleId, permissionId)
+      } else {
+        await apiClient.revokePermission(roleId, permissionId)
+      }
       
-      addToast(`Permission ${action}ed successfully!`, 'success')
+      addToast(`Permission ${granted ? 'granted' : 'revoked'} successfully!`, 'success')
+      
+      // Update local permission matrix
+      setPermissionMatrix(prev => ({
+        ...prev,
+        [permissionId]: granted
+      }))
+      
       fetchRoles()
     } catch (error) {
       console.error('Permission update error:', error)
@@ -178,15 +185,15 @@ export default function Roles() {
   }
 
   const roleSchema = {
-    name: { type: 'text', required: true, label: 'Role Name' },
+    name: { type: 'string', required: true, label: 'Role Name' },
     description: { type: 'textarea', required: false, label: 'Description' },
-    level: { type: 'select', required: true, label: 'Level', options: [
+    level: { type: 'enum', required: true, label: 'Level', options: [
       { value: 'admin', label: 'Administrator' },
       { value: 'manager', label: 'Manager' },
       { value: 'user', label: 'User' },
       { value: 'guest', label: 'Guest' }
     ]},
-    status: { type: 'select', required: true, label: 'Status', options: [
+    status: { type: 'enum', required: true, label: 'Status', options: [
       { value: 'active', label: 'Active' },
       { value: 'inactive', label: 'Inactive' }
     ]}
@@ -302,7 +309,7 @@ export default function Roles() {
         title="Create New Role"
       >
         <EntityForm
-          schema={roleSchema}
+          fields={Object.entries(roleSchema).map(([key, config]) => ({ key, ...config }))}
           onSubmit={handleCreate}
           loading={formLoading}
           submitText="Create Role"
@@ -320,11 +327,11 @@ export default function Roles() {
       >
         {selectedRole && (
           <EntityForm
-            schema={roleSchema}
+            fields={Object.entries(roleSchema).map(([key, config]) => ({ key, ...config }))}
             initialData={selectedRole}
             onSubmit={handleEdit}
             loading={formLoading}
-            submitText="Update Role"
+            submitLabel="Update Role"
           />
         )}
       </Modal>
@@ -338,7 +345,7 @@ export default function Roles() {
           setPermissionMatrix({})
         }}
         title={`Manage Permissions - ${selectedRole?.name}`}
-        size="large"
+        size="lg"
       >
         {selectedRole && (
           <div className="space-y-4">
