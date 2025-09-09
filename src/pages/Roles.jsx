@@ -41,8 +41,8 @@ export default function Roles() {
       setRoles(response.data || [])
     } catch (error) {
       console.error('Error fetching roles:', error)
-      setError(error.message)
-      addToast('Failed to load roles', 'error')
+      setError(error.message || 'Failed to connect to API server')
+      addToast(error.message || 'Failed to load roles. Please ensure the backend server is running.', 'error')
     } finally {
       setLoading(false)
     }
@@ -55,7 +55,7 @@ export default function Roles() {
       setPermissions(response.data || [])
     } catch (error) {
       console.error('Error fetching permissions:', error)
-      addToast('Failed to load permissions', 'error')
+      addToast(error.message || 'Failed to load permissions. Please ensure the backend server is running.', 'error')
     }
   }
 

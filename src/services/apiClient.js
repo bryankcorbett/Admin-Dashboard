@@ -42,7 +42,13 @@ class ApiClient {
    * Handle API response
    */
   async handleResponse(response) {
-    const data = await response.json()
+    let data
+    try {
+      data = await response.json()
+    } catch (error) {
+      // Handle cases where response is not valid JSON
+      throw new Error('Invalid response from server')
+    }
 
     if (!response.ok) {
       const error = new Error(data.error || 'API request failed')
@@ -70,6 +76,12 @@ class ApiClient {
       return await this.handleResponse(response)
     } catch (error) {
       console.error('API request failed:', error)
+      
+      // Check if it's a network error (backend not running)
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        throw new Error('Unable to connect to the API server. Please ensure the backend server is running on http://localhost:8000')
+      }
+      
       throw error
     }
   }

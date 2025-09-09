@@ -34,8 +34,8 @@ The Admin Dashboard provides complete system management capabilities including:
 ### Prerequisites
 - Node.js 18+ 
 - npm 10.9.2+
-- PHP 8.2+ (for API backend)
-- MySQL 8.0+ (for database)
+- **PHP 8.2+ (for API backend) - REQUIRED**
+- **MySQL 8.0+ (for database) - REQUIRED**
 
 ### Installation
 
@@ -51,12 +51,20 @@ The Admin Dashboard provides complete system management capabilities including:
    # Edit .env with your configuration
    ```
 
-3. **Start Development Server**
+3. **Start Backend API Server (REQUIRED)**
+   ```bash
+   # Navigate to your PHP API directory and start the server
+   php -S localhost:8000
+   ```
+   
+   **Important**: The admin dashboard requires a PHP backend API server running on port 8000. Without this server, you will see "Failed to fetch" errors.
+
+4. **Start Development Server**
    ```bash
    npm run dev
    ```
 
-4. **Access Admin Dashboard**
+5. **Access Admin Dashboard**
    - Open http://localhost:5175
    - Default admin user: admin@biz365.ai
 

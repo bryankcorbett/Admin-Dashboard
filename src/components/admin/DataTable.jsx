@@ -88,7 +88,7 @@ export default function DataTable({
       })
     } catch (err) {
       console.error('Failed to fetch data:', err)
-      setError(err.message || 'Failed to load data')
+      setError(err.message || 'Failed to load data. Please check if the backend API server is running.')
     } finally {
       setLoading(false)
     }
